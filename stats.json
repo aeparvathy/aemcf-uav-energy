@@ -1,0 +1,15 @@
+{
+  "best_baseline": "baseline_offline",
+  "endurance_vs_best_baseline": {
+    "t": 14.64630469232992,
+    "p": 1.5757210320458977e-19
+  },
+  "energy_vs_best_baseline": {
+    "t": 262.11446731319677,
+    "p": 8.931708088749687e-79
+  },
+  "ablation_wind_term_endurance": {
+    "t": 4.10713832177805,
+    "p": 0.00015156148747989196
+  }
+}
