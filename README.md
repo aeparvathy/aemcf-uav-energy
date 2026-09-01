@@ -25,7 +25,8 @@ wind).
 - **Baselines**: a fixed 50/50 battery/fuel-cell power split, and a
   static equivalent-consumption split computed once before flight.
 - **Ablation**: a wind-blind variant of the controller, for isolating
-  the contribution of wind-aware adaptation.
+  the contribution of wind-aware adaptation, tested under both mild
+  and substantially harsher wind conditions.
 
 ## Repository structure
 
@@ -33,13 +34,15 @@ wind).
 .
 ├── uav_energy_sim.py              # Core simulation: dynamics, wind, energy model, guidance law, QP controller
 ├── run_experiment.py               # Monte Carlo experiment driver and statistics
+├── run_harsh_wind.py                # Harsher-wind follow-up experiment (tests whether wind-awareness benefit grows with wind severity)
 ├── make_figures.py                  # Figure generation from experiment output
 ├── make_architecture_diagram.py     # Generates the system architecture diagram
 ├── AEMCF_UAV_simulation.ipynb        # End-to-end Colab notebook (simulation -> experiment -> figures)
 └── results/
-    ├── results.csv                  # Per-seed, per-controller experiment output
-    ├── summary.csv                   # Aggregated summary statistics
-    ├── stats.json                     # Paired significance tests
+    ├── results.csv                  # Per-seed, per-controller output, primary experiment (mild wind, 50 seeds)
+    ├── harsh_results.csv             # Per-seed, per-controller output, harsher-wind follow-up (30 seeds)
+    ├── summary.csv                   # Aggregated summary statistics (primary experiment)
+    ├── stats.json                     # Paired significance tests (primary experiment)
     └── traces.json                    # SOC / fuel time series for a representative run
 ```
 
@@ -68,6 +71,26 @@ python3 make_architecture_diagram.py
 
 `run_experiment.py --help` lists all options (seed offset, mission
 duration cap, output paths).
+
+## Harsher-wind follow-up experiment
+
+A supplementary experiment tests whether the wind-awareness ablation's
+endurance contribution grows under stronger wind (mean speed 7 m/s,
+max gust 15 m/s, shorter correlation time of 20 s, vs. 4 m/s / 7.5 m/s
+/ 55 s in the primary experiment):
+
+```bash
+# Run 30 seeds under harsher wind, seeds 0-4 through 25-29 in batches
+python3 run_harsh_wind.py 30 0 harsh_results.csv
+```
+
+`run_harsh_wind.py` takes three positional arguments: number of seeds,
+starting seed offset, and output CSV path, plus an optional `--append`
+flag for running in batches. The wind parameters are set as
+`HARSH_WIND` at the top of the script and can be edited directly.
+Result: under the wind conditions tested, this contribution did *not*
+grow with wind severity — see the paper's Results and Discussion for
+the full analysis and a candidate explanation.
 
 ## Requirements
 
